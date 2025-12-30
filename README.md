@@ -1,4 +1,4 @@
-# Plagiarism and AI Content Detector (Nokia_Hackathon)
+# Plagiarism and AI Content Detector 
 
 ## 1. Project Overview
 
