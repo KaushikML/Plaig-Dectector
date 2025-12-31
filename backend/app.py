@@ -18,12 +18,12 @@ from io import BytesIO
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import configuration and database
-from config import Config
-from database import DB, User, Report, bcrypt
+from src.config import Config
+from src.database import DB, User, Report, bcrypt
 
 # Import the analyse function from your core_detector script
 try:
-    from core_detector import analyse
+    from src.core_detector import analyse
     print("Successfully imported analyse function from core_detector.py.")
 except ImportError as e:
     print(f"Error importing analyse function: {e}")

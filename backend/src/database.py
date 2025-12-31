@@ -2,7 +2,7 @@
 import pymongo
 from bson.objectid import ObjectId
 from flask_login import UserMixin
-from config import Config
+from src.config import Config
 from datetime import datetime
 from flask_bcrypt import Bcrypt
 

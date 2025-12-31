@@ -1,215 +1,218 @@
-# Plagiarism and AI Content Detector 
+# Plagiarism & AI Content Detector
+Hybrid Web Search + Local Embeddings System (Hackathon Edition)
 
-## 1. Project Overview
+------------------------------------------------------------
 
-This web application detects plagiarism by comparing submitted text against web
-sources and also estimates the probability of the content being AI generated.
-Users can register, sign in and review past reports which are available for
-download as PDFs.
+PROJECT OVERVIEW
 
-### Directory structure
+This project is a full-stack plagiarism and AI-content detection system that
+analyzes uploaded documents against real web sources and generates detailed
+PDF reports.
 
-```
-backend/   # Flask application
-  app.py   # entry point
-  venv/    # contains application modules and requirements.txt
-frontend/  # React/Vite user interface
-```
+The system is designed with reliability and graceful degradation in mind:
+- Core plagiarism detection runs fully offline using local embeddings
+- External LLMs (Google Gemini) are optional enhancements
+- If LLM quota is unavailable, the system still completes analysis
 
-## 2. Features
+This makes the project robust for demos, hackathons, and real-world usage.
 
-*   **User Management:**
-    *   User registration and login.
-    *   Secure authentication using session cookies (via Flask-Login).
-*   **Core Analysis:**
-    *   Plagiarism detection for uploaded files (.txt, .pdf, .docx) or direct text input.
-    *   Comparison against web sources using Google Search.
-    *   AI-generated content probability estimation using Google Gemini.
-*   **Reporting:**
-    *   Detailed analysis reports including:
-        *   Originality score.
-        *   AI probability score with reasoning.
-        *   Top keywords extracted from the document.
-        *   Search queries generated and used for web search.
-        *   List of detected overlaps with source URLs and similarity scores.
-    *   Downloadable PDF reports of the analysis.
-*   **User Dashboard & History:**
-    *   Dashboard displaying user statistics (e.g., total reports generated, last checked document).
-    *   History page listing all past analysis reports for the logged-in user.
-*   **User Profile:**
-    *   Basic user profile display page.
-*   **User Interface:**
-    *   Responsive UI built with React.
+------------------------------------------------------------
 
-## 🧩 3. Architecture Diagram
+CORE IDEA
 
-The following diagram outlines the core workflow of the system:
+Plagiarism detection should not fail because an LLM quota is exhausted.
 
-![Architecture Diagram](./architecture.png)
+To achieve this, the system uses:
+- Web search and scraping for source discovery
+- Local semantic embeddings (E5) for similarity scoring
+- Optional LLM usage for query refinement and AI probability
+- Strict tunable thresholds to reduce irrelevant matches
 
-### 🔄 Workflow Summary:
+------------------------------------------------------------
 
-1. **User Input** (text or file) is submitted.
-2. **Text Extraction** parses the input.
-3. **Query Generation** creates search terms.
-4. **Web Search & Scraping** fetches relevant sources.
-5. **Plagiarism Detection** compares scraped data.
-6. **AI Detection** assesses AI generation likelihood.
-7. **PDF Report** is generated with full analysis.
-8. **UI Output** presents the report and metrics to the user.
+PROJECT STRUCTURE
 
----
+Plaig-Dectector/
+│
+├── backend/
+│   ├── app.py               Flask entry point
+│   ├── core_detector.py     Plagiarism & AI detection logic
+│   ├── auth.py              Authentication routes
+│   ├── database.py          MongoDB connection
+│   ├── config.py            Configuration & env loading
+│   ├── .env                 Environment variables
+│   ├── requirements.txt
+│   └── .venv/               Python virtual environment
+│
+├── frontend/                React (Vite)
+│
+└── README.md
 
-## 4. Tech Stack
+------------------------------------------------------------
 
-**Backend:**
-*   **Language:** Python
-*   **Framework:** Flask
-*   **Database:** MongoDB (using PyMongo)
-*   **Authentication:** Flask-Login, Flask-Bcrypt
-*   **APIs & Services:**
-    *   Google Generative AI (Gemini for embeddings, AI detection, query generation)
-    *   Serper API (for Google search results)
-*   **Core Logic Libraries:**
-    *   NLTK (text processing, keyword extraction)
-    *   pdfminer.six (PDF text extraction)
-    *   python-docx (DOCX text extraction)
-    *   ReportLab (PDF report generation)
-    *   BeautifulSoup4 (web scraping for source content)
-    *   RapidFuzz (fuzzy string matching for plagiarism)
-*   **Other:** python-dotenv (environment variable management)
+FEATURES
 
-**Frontend:**
-*   **Language:** JavaScript
-*   **Library/Framework:** React
-*   **Build Tool:** Vite
-*   **Routing:** React Router
-*   **State Management:** React Context (used for `useAuth` and `usePlagiarismCheck` hooks)
-*   **Styling:** CSS (custom styles, no specific framework noted)
-*   **Other:** `js-cookie` (though potentially not strictly needed for auth due to Flask-Login's HTTP-only cookies, it might be used or was planned).
+User Management
+- User registration and login
+- Secure session-based authentication
+- User-specific report history
 
-**General:**
-*   **Version Control:** Git
+Plagiarism Detection
+- Supports PDF, DOCX, TXT, and raw text input
+- Web-scale comparison using Serper (Google Search API)
+- Scrapes real web pages
+- Semantic similarity using local E5 embeddings
+- Fuzzy matching using RapidFuzz
+- Configurable precision/recall tuning
 
-## 5. Prerequisites
+AI Content Detection (Optional)
+- Uses Google Gemini when quota is available
+- Automatically falls back if unavailable
+- Never blocks plagiarism analysis
 
-*   **Node.js and npm** (or yarn) for the frontend.
-*   **Python 3** (e.g., 3.8+) and pip for the backend.
-*   Access to a **MongoDB** instance (local or cloud-hosted).
-*   **API Keys** for:
-    *   Google Generative AI (from Google AI Studio)
-    *   Serper API (from serper.dev)
+Reporting
+- Originality score
+- Overlap excerpts with source URLs
+- Fuzzy and semantic similarity scores
+- Search queries used
+- AI probability (if available)
+- Downloadable PDF reports
 
-## 6. Environment Variables
+Dashboard
+- User statistics
+- Analysis history
+- Report downloads
 
-An example environment file is included at `backend/.env.example`.  Copy this
-file to `backend/.env` and replace the placeholder values with your own
-configuration:
+------------------------------------------------------------
 
-```
-FLASK_SECRET_KEY=your_flask_secret_key
-MONGO_URI=mongodb://localhost:27017/plagiarism_detector
-GOOGLE_API_KEY=your_google_api_key
-SERPER_API_KEY=your_serper_api_key
+ARCHITECTURE OVERVIEW
+
+User Upload
+   ↓
+Text Extraction
+   ↓
+Query Generation
+   ├─ Gemini (optional)
+   └─ Keyword fallback
+   ↓
+Serper Web Search
+   ↓
+Web Scraping
+   ↓
+Local E5 Embeddings (Offline)
+   ↓
+Similarity Scoring
+   ↓
+PDF Report Generation
+
+------------------------------------------------------------
+
+LOCAL EMBEDDINGS (WHY E5)
+
+The system uses SentenceTransformers with the model:
+intfloat/e5-large-v2
+
+Advantages:
+- Runs completely locally
+- No API keys or quotas
+- Strong semantic similarity performance
+- Ideal for hackathons and demos
+
+This removes the biggest reliability risk in plagiarism systems.
+
+------------------------------------------------------------
+
+TUNING KNOBS
+
+Defined in core_detector.py:
+
+MAX_QUERIES    = 6
+MAX_PAGES     = 30
+WINDOW_SENT   = 5
+TH_FUZZ       = 72
+TH_COS        = 0.86
+MAX_OVERL_URL = 3
+
+These control precision vs recall.
+
+Recommended usage:
+- Resume: stricter thresholds, MAX_OVERL_URL = 1–2
+- Academic report: balanced defaults
+- Blog/article: slightly relaxed thresholds
+- Legal documents: very strict thresholds
+
+------------------------------------------------------------
+
+TECH STACK
+
+Backend
+- Python
+- Flask
+- MongoDB
+- SentenceTransformers (E5 embeddings)
+- RapidFuzz
+- BeautifulSoup
+- ReportLab
+- NLTK
+- Serper API
+- Google Gemini (optional)
+
+Frontend
+- React
+- Vite
+- React Router
+- Custom CSS
+
+------------------------------------------------------------
+
+ENVIRONMENT VARIABLES
+
+Create backend/.env:
+
+FLASK_SECRET_KEY=your_secret_key
+MONGO_URI=mongodb://localhost:27017/plagiarism
+SERPER_API_KEY=your_serper_key
+
+Optional (LLM features):
+GOOGLE_API_KEY=your_gemini_key
+GEMINI_MODEL=gemini-2.0-flash
+
 DEBUG=True
-```
 
-`FLASK_SECRET_KEY` should be a random string, `MONGO_URI` points to your MongoDB
-instance and the API keys are obtained from Google AI Studio and serper.dev.
-Set `DEBUG=False` in production.
+Gemini is optional. Plagiarism detection works without it.
 
-**Note for Frontend:** The frontend makes API calls to the backend, typically at `http://127.0.0.1:5000`. This is hardcoded in the React hooks (`frontend/src/hooks/`). If your backend runs on a different URL, you'll need to update these hooks.
+------------------------------------------------------------
 
-## 7. Backend Setup
+BACKEND SETUP (WITH .venv)
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository_url>
-    cd <repository_name>
-    ```
+cd backend
+python -m venv .venv
+.\\.venv\\Scripts\\activate   (Windows)
+pip install -r requirements.txt
+python app.py
 
-2.  **Navigate to the backend directory:**
-    ```bash
-    cd backend
-    ```
+Backend runs at:
+http://127.0.0.1:5000
 
-3.  **Create a Python virtual environment:**
-    ```bash
-    python -m venv venv
-    ```
+------------------------------------------------------------
 
-4.  **Activate the virtual environment:**
-    *   Windows:
-        ```bash
-        venv\Scripts\activate
-        ```
-    *   macOS/Linux:
-        ```bash
-        source venv/bin/activate
-        ```
+FRONTEND SETUP
 
-5.  **Install dependencies:**
-    ```bash
-    pip install -r venv/requirements.txt
-    ```
-    *(The `requirements.txt` file lists all backend dependencies.)*
+cd frontend
+npm install
+npm run dev
 
-6.  **NLTK Data Download (if needed):**
-    The application uses NLTK for text processing. The `core_detector.py` script attempts to download the 'stopwords' corpus if not found. You might need to ensure 'punkt' (for tokenization) is also available if not already handled by other dependencies or if explicit sentence tokenization is used elsewhere. If you encounter NLTK-related errors, you can manually download them by running a Python interpreter:
-    ```python
-    import nltk
-    nltk.download('stopwords')
-    nltk.download('punkt')
-    ```
+Frontend runs at:
+http://127.0.0.1:5173
 
-7.  **Create and populate the `.env` file:**
-    As described in the "Environment Variables" section, create a `.env` file in the `backend` directory with your API keys and configurations.
+------------------------------------------------------------
 
-8.  **Run the Flask development server:**
-    ```bash
-    python app.py
-    ```
+DESIGN PHILOSOPHY
 
-9.  The backend should now be running on `http://127.0.0.1:5000`.
+- LLMs are enhancements, not dependencies
+- Local ML for correctness
+- Graceful degradation
+- Transparent reporting
+- Configurable precision
 
-## 8. Frontend Setup
-
-1.  **Navigate to the frontend directory** (from the project root):
-    ```bash
-    cd frontend
-    ```
-    (If you are in the `backend` directory, use `cd ../frontend`)
-
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-    (or `yarn install` if you prefer yarn)
-
-3.  **Run the Vite development server:**
-    ```bash
-    npm run dev
-    ```
-    (or `yarn dev`)
-
-4.  The frontend application should now be running, typically on `http://127.0.0.1:5173`, and will attempt to connect to the backend API at `http://127.0.0.1:5000`.
-
-## 9. API Endpoints (Key Examples)
-
-The backend exposes several API endpoints, including:
-
-*   `POST /api/auth/register`: User registration.
-*   `POST /api/auth/login`: User login.
-*   `POST /api/auth/logout`: User logout.
-*   `GET /@me`: Get details of the currently authenticated user.
-*   `POST /analyse`: Submit text or a file for plagiarism and AI content analysis. Requires authentication.
-*   `GET /api/history`: Retrieve the analysis history for the authenticated user. Requires authentication.
-*   `GET /download-report/<filename>`: Download a specific PDF report. Requires authentication.
-*   `GET /api/dashboard_stats`: Get user statistics for the dashboard. Requires authentication.
-
-(Refer to `backend/app.py` for the complete list of routes and their functionalities.)
-
-## 10. Contributing
-
-Contributions are welcome! Please fork the repository, create a new branch for your feature or fix, and submit a pull request with your changes.
-
+This project is built with production thinking, not just demo logic.

@@ -2,8 +2,8 @@
 from flask import Blueprint, redirect, url_for, session, current_app, jsonify, request
 from authlib.integrations.flask_client import OAuth
 from flask_login import login_user, logout_user
-from database import DB, User
-from config import Config
+from src.database import DB, User
+from src.config import Config
 import secrets # Import secrets module for generating nonce
 
 auth_bp = Blueprint('auth', __name__)

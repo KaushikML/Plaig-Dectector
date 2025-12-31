@@ -1,4 +1,26 @@
 /* SearchPlagiarismPage.css */
+/* Page-scoped theme vars (prevents other pages from overriding these) */
+.search-plagiarism-container {
+  --accent-color: #6366f1;
+  --accent-dark-color: #4f46e5;
+
+  --bg-color: #ffffff;
+  --bg-alt-color: #f9fafb;
+  --bg-hover-color: #f3f4f6;
+
+  --border-color: #d1d5db;
+
+  --text-dark-color: #111827;
+  --text-light-color: #6b7280;
+
+  --error-color: #dc2626;
+  --error-bg-color: #fee2e2;
+  --error-border-color: #fecaca;
+
+  --success-color: #10b981;
+  --success-bg-color: #d1fae5;
+  --success-border-color: #a7f3d0;
+}
 
 /* Base styles */
 .search-plagiarism-container {
@@ -64,16 +86,19 @@
   color: var(--text-light-color);
   font-size: 1.2rem;
 }
-
 textarea {
-  width: 90%;
+  width: 100%;
+  box-sizing: border-box;
   padding: 15px 15px 15px 40px;
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: 6px;
   min-height: 150px;
   font-size: 1rem;
   resize: vertical;
+  background: #fff;
+  color: var(--text-dark-color);
 }
+
 
 .divider-with-text {
   display: flex;
@@ -164,15 +189,16 @@ textarea {
   border: 1px solid var(--accent-color);
 }
 
-.btn-main:hover {
-  background-color: var(--accent-dark-color);
-  border-color: var(--accent-dark-color);
+.btn-main {
+  background-color: var(--accent-color, #6366f1);
+  color: #fff;
+  border: 1px solid var(--accent-color, #6366f1);
+  font-weight: 600;
 }
 
-.btn-alt {
-  background-color: var(--bg-alt-color);
-  color: var(--accent-color);
-  border: 1px solid var(--border-color);
+.btn-main:hover {
+  background-color: var(--accent-dark-color, #4f46e5);
+  border-color: var(--accent-dark-color, #4f46e5);
 }
 
 .btn-alt:hover {
